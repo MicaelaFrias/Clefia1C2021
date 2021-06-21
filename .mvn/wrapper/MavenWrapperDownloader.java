@@ -7,9 +7,9 @@
  *
  *      https://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
+ * nless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -22,13 +22,13 @@ public class MavenWrapperDownloader {
 
     private static final String WRAPPER_VERSION = "0.5.6";
     /**
-     * Default URL to download the maven-wrapper.jar from, if no 'downloadUrl' is provided.
+     * Default RL to download the maven-wrapper.jar from, if no 'downloadrl' is provided.
      */
-    private static final String DEFAULT_DOWNLOAD_URL = "https://repo.maven.apache.org/maven2/io/takari/maven-wrapper/"
+    private static final String DEFALT_DOWNLOAD_RL = "https://repo.maven.apache.org/maven2/io/takari/maven-wrapper/"
         + WRAPPER_VERSION + "/maven-wrapper-" + WRAPPER_VERSION + ".jar";
 
     /**
-     * Path to the maven-wrapper.properties file, which might contain a downloadUrl property to
+     * Path to the maven-wrapper.properties file, which might contain a downloadrl property to
      * use instead of the default one.
      */
     private static final String MAVEN_WRAPPER_PROPERTIES_PATH =
@@ -43,24 +43,24 @@ public class MavenWrapperDownloader {
     /**
      * Name of the property which should be used to override the default download url for the wrapper.
      */
-    private static final String PROPERTY_NAME_WRAPPER_URL = "wrapperUrl";
+    private static final String PROPERTY_NAME_WRAPPER_RL = "wrapperrl";
 
     public static void main(String args[]) {
         System.out.println("- Downloader started");
         File baseDirectory = new File(args[0]);
-        System.out.println("- Using base directory: " + baseDirectory.getAbsolutePath());
+        System.out.println("- sing base directory: " + baseDirectory.getAbsolutePath());
 
         // If the maven-wrapper.properties exists, read it and check if it contains a custom
-        // wrapperUrl parameter.
+        // wrapperrl parameter.
         File mavenWrapperPropertyFile = new File(baseDirectory, MAVEN_WRAPPER_PROPERTIES_PATH);
-        String url = DEFAULT_DOWNLOAD_URL;
+        String url = DEFALT_DOWNLOAD_RL;
         if(mavenWrapperPropertyFile.exists()) {
             FileInputStream mavenWrapperPropertyFileInputStream = null;
             try {
                 mavenWrapperPropertyFileInputStream = new FileInputStream(mavenWrapperPropertyFile);
                 Properties mavenWrapperProperties = new Properties();
                 mavenWrapperProperties.load(mavenWrapperPropertyFileInputStream);
-                url = mavenWrapperProperties.getProperty(PROPERTY_NAME_WRAPPER_URL, url);
+                url = mavenWrapperProperties.getProperty(PROPERTY_NAME_WRAPPER_RL, url);
             } catch (IOException e) {
                 System.out.println("- ERROR loading '" + MAVEN_WRAPPER_PROPERTIES_PATH + "'");
             } finally {
@@ -84,7 +84,7 @@ public class MavenWrapperDownloader {
         }
         System.out.println("- Downloading to: " + outputFile.getAbsolutePath());
         try {
-            downloadFileFromURL(url, outputFile);
+            downloadFileFromRL(url, outputFile);
             System.out.println("Done");
             System.exit(0);
         } catch (Throwable e) {
@@ -94,9 +94,9 @@ public class MavenWrapperDownloader {
         }
     }
 
-    private static void downloadFileFromURL(String urlString, File destination) throws Exception {
-        if (System.getenv("MVNW_USERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {
-            String username = System.getenv("MVNW_USERNAME");
+    private static void downloadFileFromRL(String urlString, File destination) throws Exception {
+        if (System.getenv("MVNW_SERNAME") != null && System.getenv("MVNW_PASSWORD") != null) {
+            String username = System.getenv("MVNW_SERNAME");
             char[] password = System.getenv("MVNW_PASSWORD").toCharArray();
             Authenticator.setDefault(new Authenticator() {
                 @Override
@@ -105,11 +105,11 @@ public class MavenWrapperDownloader {
                 }
             });
         }
-        URL website = new URL(urlString);
+        RL website = new RL(urlString);
         ReadableByteChannel rbc;
         rbc = Channels.newChannel(website.openStream());
         FileOutputStream fos = new FileOutputStream(destination);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALE);
         fos.close();
         rbc.close();
     }
