@@ -465,7 +465,6 @@ public class ClefiaApplication {
         Byte[] array_1 = new Byte[]{1, 0, 1, 0, 1, 1};
         Byte[] array_2 = new Byte[]{1, 0, 0, 1, 0, 1};
         Byte[] array_3 = new Byte[6];
-        byte[] array_4 = new byte[]{0x7F};
         Byte[] array_5 = new Byte[]{0x7F};
 
       int[] skey = {
