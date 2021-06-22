@@ -1,10 +1,7 @@
 package com.example.clefia;
 
-import com.groupdocs.metadata.internal.a.By;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
 @SpringBootApplication
