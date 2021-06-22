@@ -214,7 +214,7 @@ int[] clefia_s1 = {
                 ByteCpy(getSubArray(getBytes(fin),12) , getBytes(fout));
             }
         }
-        ByteCpy(y, getBytes(fout));
+        ByteCpy(y, getSubArray(getBytes(fout),16));
     }
 
     public void ClefiaGfn8(Byte[] y, Byte[] x, Byte[] rk, int r)
@@ -238,25 +238,101 @@ int[] clefia_s1 = {
         ByteCpy(y, getBytes(fout));
     }
 
-//    public void ClefiaGfn4(Byte[] y, Byte[] x, Byte[] rk, int r)
+    public void ClefiaGfn4Inv(Byte[] y, Byte[] x, Byte[] rk, int r)
+    {
+        int[] fin = new int[16], fout = new int[16];
+        getSubArray(rk, (r - 1) * 8);
+        ByteCpy(getBytes(fin), x);
+        while(r-- > 0){
+            ClefiaF0Xor(getBytes(fout), getBytes(fin), rk);
+            ClefiaF1Xor(getSubArray(getBytes(fout),8), getSubArray(getBytes(fin),8) , getSubArray(rk,4));
+            //se hace corrimiento sobre array rk, chequear donde se usa para ver cuando se hace
+            getSubArray(rk,8);
+
+            if(r==1){ /* swapping for encryption */
+                ByteCpy(getBytes(fin) ,  getSubArray(getBytes(fout),4) );
+                ByteCpy(getSubArray(getBytes(fin),12) , getBytes(fout));
+            }
+        }
+        ByteCpy(y, getSubArray(getBytes(fout),16));
+    }
+
+    void ClefiaConSet(Byte[] con, Byte[] iv, int lk)
+    {
+        int[] t = new int[2];
+        int tmp;
+
+        ByteCpy(getBytes(t), iv);
+        while(lk-- > 0){
+            con[0] = (byte)(t[0] ^ 0xb7); /* P_16 = 0xb7e1 (natural logarithm) */
+            con[1] = (byte)(t[1] ^ 0xe1);
+            con[2] = (byte)(~((t[0] << 1) | (t[1] >> 7)));
+            con[3] = (byte)(~((t[1] << 1) | (t[0] >> 7)));
+            con[4] = (byte)(~t[0] ^ 0x24); /* Q_16 = 0x243f (circle ratio) */
+            con[5] = (byte)(~t[1] ^ 0x3f);
+            con[6] = (byte)(t[1]);
+            con[7] = (byte)(t[0]);
+            con = getSubArray(con,8);
+
+            /* updating T */
+            if((t[1] & 0x01) != 0){
+                t[0] ^= 0xa8;
+                t[1] ^= 0x30;
+            }
+            tmp = t[0] << 7;
+            t[0] = (t[0] >> 1) | (t[1] << 7);
+            t[1] = (t[1] >> 1) | tmp;
+        }
+    }
+
+    public void ClefiaDoubleSwap(Byte[] lk)
+    {
+        int[] t = new int[16];
+
+        t[0]  = (lk[0] << 7) | (lk[1]  >>> 1);
+        t[1]  = (lk[1] << 7) | (lk[2]  >>> 1);
+        t[2]  = (lk[2] << 7) | (lk[3]  >>> 1);
+        t[3]  = (lk[3] << 7) | (lk[4]  >>> 1);
+        t[4]  = (lk[4] << 7) | (lk[5]  >>> 1);
+        t[5]  = (lk[5] << 7) | (lk[6]  >>> 1);
+        t[6]  = (lk[6] << 7) | (lk[7]  >>> 1);
+        t[7]  = (lk[7] << 7) | (lk[15] & 0x7f);
+
+        t[8]  = (lk[8]  >>> 7) | (lk[0]  & 0xfe);
+        t[9]  = (lk[9]  >>> 7) | (lk[8]  << 1);
+        t[10] = (lk[10] >>> 7) | (lk[9]  << 1);
+        t[11] = (lk[11] >>> 7) | (lk[10] << 1);
+        t[12] = (lk[12] >> 7) | (lk[11] << 1);
+        t[13] = (lk[13] >>> 7) | (lk[12] << 1);
+        t[14] = (lk[14] >>> 7) | (lk[13] << 1);
+        t[15] = (lk[15] >>> 7) | (lk[14] << 1);
+
+        ByteCpy(lk, getBytes(t));
+    }
+
+//    void ClefiaKeySet128(unsigned char *rk, const unsigned char *skey)
 //    {
-//        int[] fin = new int[16], fout = new int[16];
+//         const unsigned char iv[2] = {0x42U, 0x8aU}; /* cubic root of 2 */
+//        unsigned char lk[16];
+//        unsigned char con128[4 * 60];
+//        int i;
 //
+//        /* generating CONi^(128) (0 <= i < 60, lk = 30) */
+//        ClefiaConSet(con128, iv, 30);
+//        /* GFN_{4,12} (generating L from K) */
+//        ClefiaGfn4(lk, skey, con128, 12);
 //
-//
-//        ByteCpy(getBytes(fin), x);
-//        while(r-- > 0){
-//            ClefiaF0Xor(getBytes(fout), getBytes(fin), rk);
-//            ClefiaF1Xor(getSubArray(getBytes(fout),8), getSubArray(getBytes(fin),8) , getSubArray(rk,4));
-//            //se hace corrimiento sobre array rk, chequear donde se usa para ver cuando se hace
-//            getSubArray(rk,8);
-//
-//            if(r==1){ /* swapping for encryption */
-//                ByteCpy(getBytes(fin) ,  getSubArray(getBytes(fout),4) );
-//                ByteCpy(getSubArray(getBytes(fin),12) , getBytes(fout));
+//        ByteCpy(rk, skey, 8); /* initial whitening key (WK0, WK1) */
+//        rk += 8;
+//        for(i = 0; i < 9; i++){ /* round key (RKi (0 <= i < 36)) */
+//            ByteXor(rk, lk, con128 + i * 16 + (4 * 24), 16);
+//            if(i % 2){
+//                ByteXor(rk, rk, skey, 16); /* Xoring K */
 //            }
+//            ClefiaDoubleSwap(lk); /* Updating L (DoubleSwap function) */
+//            rk += 16;
 //        }
-//        ByteCpy(y, getBytes(fout));
+//        ByteCpy(rk, skey + 8, 8); /* final whitening key (WK2, WK3) */
 //    }
 
 
