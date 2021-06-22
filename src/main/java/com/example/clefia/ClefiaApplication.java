@@ -217,7 +217,7 @@ public class ClefiaApplication {
         ByteCpy(y, getSubArray(getBytes(fout), 16));
     }
 
-    public void ClefiaGfn8(Byte[] y, Byte[] x, Byte[] rk, int r) {
+    public static void ClefiaGfn8(Byte[] y, Byte[] x, Byte[] rk, int r) {
         int[] fin = new int[32], fout = new int[32];
 
 
@@ -346,7 +346,7 @@ public class ClefiaApplication {
         ByteCpy(rk, getSubArray(skey, 8)); /* final whitening key (WK2, WK3) */
     }
 
-    public void ClefiaKeySet192(Byte[] rk, Byte[] skey) {
+    public static void ClefiaKeySet192(Byte[] rk, Byte[] skey) {
         int[] iv = {0x71, 0x37}; /* cubic root of 2 */
         int[] skey256 = new int[32];
         int[] lk = new int[32];
@@ -385,7 +385,7 @@ public class ClefiaApplication {
 
     }
 
-    public void ClefiaKeySet256(Byte[] rk, Byte[] skey) {
+    public static void ClefiaKeySet256(Byte[] rk, Byte[] skey) {
         int[] iv = {0xb5, 0xc0}; /* cubic root of 5 */
         int[] lk = new int[32];
         int[] con256 = new int[4 * 92];
@@ -501,7 +501,7 @@ public class ClefiaApplication {
         System.out.println("--- CLEFIA-128 ---\n");
         /* encryption */
         r = ClefiaKeySet(rk, getBytes(skey), 128);
-        ClefiaEncrypt(dst, pt, rk, r);
+        ClefiaEncrypt(dst, getBytes(pt), rk, r);
         System.out.println("ciphertext: "); BytePut(dst, 16);
         /* decryption */
         ByteCpy(ct, dst);
