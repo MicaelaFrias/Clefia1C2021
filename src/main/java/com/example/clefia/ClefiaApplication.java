@@ -517,7 +517,7 @@ public class ClefiaApplication {
         ClefiaEncrypt(dst, getBytes(pt), rk, r);
         System.out.println("ciphertext: "); BytePut(dst, 16);
         /* decryption */
-        ByteCpy(ct, dst, 16);
+        ByteCpy(ct, dst);
         r = ClefiaKeySet(rk, getBytes(skey), 192);
         ClefiaDecrypt(dst, ct, rk, r);
         System.out.println("plaintext : "); BytePut(dst, 16);
