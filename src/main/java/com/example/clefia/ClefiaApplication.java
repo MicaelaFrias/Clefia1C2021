@@ -90,11 +90,11 @@ public class ClefiaApplication {
         System.out.print("\n");
     }
 
-    public static void ByteXor(Byte[] dst, Byte[] a, Byte[] b) {
+    public static void ByteXor(Byte[] dst, Byte[] a, Byte[] b, int bytelength) {
         if (a.length > b.length) {
             throw new IllegalArgumentException("El operador1 es de longitud mayor que el operador2");
         }
-        for (int cont = 0; cont < a.length; cont++) {
+        for (int cont = 0; cont < bytelength; cont++) {
             dst[cont] = (byte) (a[cont] ^ b[cont]);
         }
 
@@ -134,7 +134,7 @@ public class ClefiaApplication {
 
         /* F0 */
         /* Key addition */
-        ByteXor(getBytes(x), src, rk);
+        ByteXor(getBytes(x), src, rk, 4);
         /* Substitution layer */
         z[0] = clefia_s0[x[0]];
         z[1] = clefia_s1[x[1]];
@@ -149,7 +149,7 @@ public class ClefiaApplication {
         /* Xoring after F0 */
         ByteCpy(dst, src);
 
-        ByteXor(getSubArray(dst, 4), getSubArray(src, 4), getBytes(y));
+        ByteXor(getSubArray(dst, 4), getSubArray(src, 4), getBytes(y), 4);
     }
 
     private static Byte[] getSubArray(Byte[] dst, int indice) {
@@ -169,7 +169,7 @@ public class ClefiaApplication {
 
         /* F0 */
         /* Key addition */
-        ByteXor(getBytes(x), src, rk);
+        ByteXor(getBytes(x), src, rk, 4);
         /* Substitution layer */
         z[0] = clefia_s0[x[0]];
         z[1] = clefia_s1[x[1]];
@@ -184,7 +184,7 @@ public class ClefiaApplication {
 
         /* Xoring after F1 */
         ByteCpy(dst, src);
-        ByteXor(getSubArray(dst, 4), getSubArray(src, 4), getBytes(y));
+        ByteXor(getSubArray(dst, 4), getSubArray(src, 4), getBytes(y), 4);
     }
 
     public static Byte[] getBytes(int[] y) {
@@ -333,9 +333,9 @@ public class ClefiaApplication {
         ByteCpy(rk, skey); /* initial whitening key (WK0, WK1) */
         rk = getSubArray(rk, 8);
         for (i = 0; i < 9; i++) { /* round key (RKi (0 <= i < 36)) */
-            ByteXor(rk, getBytes(lk), getSubArray(getBytes(con128), i * 16 + (4 * 24)));
+            ByteXor(rk, getBytes(lk), getSubArray(getBytes(con128), i * 16 + (4 * 24)), 16);
             if ((i % 2) != 0) {
-                ByteXor(rk, rk, skey); /* Xoring K */
+                ByteXor(rk, rk, skey, 16); /* Xoring K */
             }
             ClefiaDoubleSwap(getBytes(lk)); /* Updating L (DoubleSwap function) */
             rk = getSubArray(rk, 16);
@@ -360,25 +360,25 @@ public class ClefiaApplication {
         /* GFN_{8,10} (generating L from K) */
         ClefiaGfn8(getBytes(lk), getBytes(skey256), getBytes(con192), 10);
 
-        ByteXor(rk, getBytes(skey256), getSubArray(getBytes(skey256), 16)); /* initial whitening key (WK0, WK1) */
+        ByteXor(rk, getBytes(skey256), getSubArray(getBytes(skey256), 16), 16); /* initial whitening key (WK0, WK1) */
         getSubArray(rk, 8);
         for (i = 0; i < 11; i++) { /* round key (RKi (0 <= i < 44)) */
             if (((i / 2) % 2) != 0) {
-                ByteXor(rk, getSubArray(getBytes(lk), 16), getSubArray(getBytes(con192), i * 16 + (4 * 40))); /* LR */
+                ByteXor(rk, getSubArray(getBytes(lk), 16), getSubArray(getBytes(con192), i * 16 + (4 * 40)), 16); /* LR */
                 if ((i % 2) != 0) {
-                    ByteXor(rk, rk, getBytes(skey256)); /* Xoring KL */
+                    ByteXor(rk, rk, getBytes(skey256), 16); /* Xoring KL */
                 }
                 ClefiaDoubleSwap(getSubArray(getBytes(lk), 16)); /* updating LR */
             } else {
-                ByteXor(rk, getBytes(lk), getSubArray(getBytes(con192), i * 16 + (4 * 40))); /* LL */
+                ByteXor(rk, getBytes(lk), getSubArray(getBytes(con192), i * 16 + (4 * 40)), 16); /* LL */
                 if ((i % 2)!=0) {
-                    ByteXor(rk, rk, getSubArray(getBytes(skey256), 16)); /* Xoring KR */
+                    ByteXor(rk, rk, getSubArray(getBytes(skey256), 16), 16); /* Xoring KR */
                 }
                 ClefiaDoubleSwap(getBytes(lk));  /* updating LL */
             }
             rk = getSubArray(rk,16);
         }
-        ByteXor(rk,getSubArray(getBytes(skey256),8), getSubArray(getBytes(skey256),24)); /* final whitening key (WK2, WK3) */
+        ByteXor(rk,getSubArray(getBytes(skey256),8), getSubArray(getBytes(skey256),24), 8); /* final whitening key (WK2, WK3) */
 
     }
 
@@ -393,26 +393,26 @@ public class ClefiaApplication {
         /* GFN_{8,10} (generating L from K) */
         ClefiaGfn8(getBytes(lk), skey, getBytes(con256), 10);
 
-        ByteXor(rk, skey, getSubArray(skey, 16)); /* initial whitening key (WK0, WK1) */
+        ByteXor(rk, skey, getSubArray(skey, 16), 8); /* initial whitening key (WK0, WK1) */
         rk = getSubArray(rk,8);
         for(i = 0; i < 13; i++){ /* round key (RKi (0 <= i < 52)) */
             if(((i / 2) % 2)!=0)
             {
-                ByteXor(rk, getSubArray(getBytes(lk), 16), getSubArray(getBytes(con256), i * 16 + (4 * 40))); /* LR */
+                ByteXor(rk, getSubArray(getBytes(lk), 16), getSubArray(getBytes(con256), i * 16 + (4 * 40)), 16); /* LR */
                 if((i % 2)!=0){
-                    ByteXor(rk, rk, skey); /* Xoring KL */
+                    ByteXor(rk, rk, skey, 16); /* Xoring KL */
                 }
                 ClefiaDoubleSwap(getSubArray(getBytes(lk) ,16)); /* updating LR */
             }else{
-                ByteXor(rk, getBytes(lk),  getSubArray(getBytes(con256), i * 16 + (4 * 40))); /* LL */
+                ByteXor(rk, getBytes(lk),  getSubArray(getBytes(con256), i * 16 + (4 * 40)), 16); /* LL */
                 if((i % 2)!=0){
-                    ByteXor(rk, rk, getSubArray(skey, 16)); /* Xoring KR */
+                    ByteXor(rk, rk, getSubArray(skey, 16), 16); /* Xoring KR */
                 }
                 ClefiaDoubleSwap(getBytes(lk));  /* updating LL */
             }
             rk = getSubArray(rk,16);
         }
-        ByteXor(rk, getSubArray(skey,8), getSubArray(skey,24)); /* final whitening key (WK2, WK3) */
+        ByteXor(rk, getSubArray(skey,8), getSubArray(skey,24), 8); /* final whitening key (WK2, WK3) */
     }
 
 
@@ -422,15 +422,15 @@ public class ClefiaApplication {
 
         ByteCpy(getBytes(rin),  pt);
 
-        ByteXor(getSubArray(getBytes(rin), 4),  getSubArray(getBytes(rin), 4), getSubArray(rk,0)); /* initial key whitening */
-        ByteXor(getSubArray(getBytes(rin), 12), getSubArray(getBytes(rin), 12), getSubArray(rk, 4));
+        ByteXor(getSubArray(getBytes(rin), 4),  getSubArray(getBytes(rin), 4), getSubArray(rk,0), 4); /* initial key whitening */
+        ByteXor(getSubArray(getBytes(rin), 12), getSubArray(getBytes(rin), 12), getSubArray(rk, 4), 4);
         rk = getSubArray(rk, 8);
 
         ClefiaGfn4(getBytes(rout), getBytes(rin), rk, r); /* GFN_{4,r} */
 
         ByteCpy(ct, getBytes(rout));
-        ByteXor(getSubArray(ct, 4),  getSubArray(ct, 4),  getSubArray(rk, r * 8 + 0)); /* final key whitening */
-        ByteXor(getSubArray(ct, 12), getSubArray(ct, 12), getSubArray(rk, r * 8 + 4));
+        ByteXor(getSubArray(ct, 4),  getSubArray(ct, 4),  getSubArray(rk, r * 8 + 0), 4); /* final key whitening */
+        ByteXor(getSubArray(ct, 12), getSubArray(ct, 12), getSubArray(rk, r * 8 + 4), 4);
     }
 
     public static void ClefiaDecrypt(Byte[] pt, Byte[] ct, Byte[] rk, int r)
@@ -439,15 +439,15 @@ public class ClefiaApplication {
 
         ByteCpy(getBytes(rin), ct);
 
-        ByteXor(getSubArray(getBytes(rin), 4),  getSubArray(getBytes(rin), 4),  getSubArray(rk, r * 8 + 8)); /* initial key whitening */
-        ByteXor(getSubArray(getBytes(rin), 12), getSubArray(getBytes(rin), 12), getSubArray(rk, r * 8 + 12));
+        ByteXor(getSubArray(getBytes(rin), 4),  getSubArray(getBytes(rin), 4),  getSubArray(rk, r * 8 + 8), 4); /* initial key whitening */
+        ByteXor(getSubArray(getBytes(rin), 12), getSubArray(getBytes(rin), 12), getSubArray(rk, r * 8 + 12), 4);
         rk = getSubArray(rk,8);
 
         ClefiaGfn4Inv(getBytes(rout), getBytes(rin), rk, r); /* GFN^{-1}_{4,r} */
 
         ByteCpy(pt, getBytes(rout));
-        ByteXor(getSubArray(pt, 4),  getSubArray(pt, 4),  getSubArray(rk , - 8)); /* final key whitening */ // SE LE PASA UN NEGATIVO ??(?)
-        ByteXor(getSubArray(pt, 12), getSubArray(pt, 12), getSubArray(rk, - 4)); // Lo mismo que arriba
+        ByteXor(getSubArray(pt, 4),  getSubArray(pt, 4),  getSubArray(rk , - 8), 4); /* final key whitening */ // SE LE PASA UN NEGATIVO ??(?)
+        ByteXor(getSubArray(pt, 12), getSubArray(pt, 12), getSubArray(rk, - 4), 4); // Lo mismo que arriba
     }
 
     static void BytePut(Byte[] data, int bytelen)
