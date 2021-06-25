@@ -79,8 +79,13 @@ public class ClefiaApplication {
             0x6b, 0x03, 0xe1, 0x2e, 0x7d, 0x14, 0x95, 0x1d
     };
 
-    public static void ByteCpy(Byte[] dst, Byte[] src) {
+    public static int[] ByteCpy(Byte[] dst, Byte[] src) {
         dst = Arrays.copyOf(src, src.length);
+        int[] a = new int[dst.length];
+        for(int i = 0; i < dst.length; i++) {
+            a[i] = dst[i];
+        }
+        return a;
     }
 
     public static void ByteShow(Byte[] dst) {
@@ -91,9 +96,10 @@ public class ClefiaApplication {
     }
 
     public static void ByteXor(Byte[] dst, Byte[] a, Byte[] b, int bytelength) {
+        /*
         if (a.length > b.length) {
             throw new IllegalArgumentException("El operador1 es de longitud mayor que el operador2");
-        }
+        }*/
         for (int cont = 0; cont < bytelength; cont++) {
             dst[cont] = (byte) (a[cont] ^ b[cont]);
         }
@@ -234,15 +240,14 @@ public class ClefiaApplication {
         ByteCpy(y, getBytes(fout));
     }
 
-    static int ClefiaKeySet(Byte[] rk, Byte[] skey, int key_bitlen)
-    {
+    static int ClefiaKeySet(Byte[] rk, Byte[] skey, int key_bitlen) {
         if(128 == key_bitlen){
             ClefiaKeySet128(rk, skey);
             return 18;
-        }else if(192 == key_bitlen){
+        } else if(192 == key_bitlen){
             ClefiaKeySet192(rk, skey);
             return 22;
-        }else if(256 == key_bitlen){
+        } else if(256 == key_bitlen){
             ClefiaKeySet256(rk, skey);
             return 26;
         }
@@ -268,30 +273,34 @@ public class ClefiaApplication {
         ByteCpy(y, getSubArray(getBytes(fout), 16));
     }
 
+    public static int getPositiveFromByte(int number) {
+        return (number<0) ? number + 256 : number;
+    }
+
     public static void ClefiaConSet(Byte[] con, Byte[] iv, int lk) {
         int[] t = new int[2];
         int tmp;
 
-        ByteCpy(getBytes(t), iv);
+        t = ByteCpy(getBytes(t), iv);
         while (lk-- > 0) {
-            con[0] = (byte) (t[0] ^ 0xb7); /* P_16 = 0xb7e1 (natural logarithm) */
-            con[1] = (byte) (t[1] ^ 0xe1);
-            con[2] = (byte) (~((t[0] << 1) | (t[1] >> 7)));
-            con[3] = (byte) (~((t[1] << 1) | (t[0] >> 7)));
-            con[4] = (byte) (~t[0] ^ 0x24); /* Q_16 = 0x243f (circle ratio) */
-            con[5] = (byte) (~t[1] ^ 0x3f);
-            con[6] = (byte) (t[1]);
-            con[7] = (byte) (t[0]);
+            con[0] = (byte) (getPositiveFromByte(t[0]) ^ 0xb7); /* P_16 = 0xb7e1 (natural logarithm) */
+            con[1] = (byte) (getPositiveFromByte(t[1]) ^ 0xe1);
+            con[2] = (byte) (~((getPositiveFromByte(t[0]) << 1) | (getPositiveFromByte((t[1])) >> 7)));
+            con[3] = (byte) (~((getPositiveFromByte(t[1]) << 1) | (getPositiveFromByte(t[0]) >> 7)));
+            con[4] = (byte) (~getPositiveFromByte(t[0]) ^ 0x24); /* Q_16 = 0x243f (circle ratio) */
+            con[5] = (byte) (~getPositiveFromByte(t[1]) ^ 0x3f);
+            con[6] = (byte) (getPositiveFromByte(t[1]));
+            con[7] = (byte) (getPositiveFromByte(t[0]));
             con = getSubArray(con, 8);
 
             /* updating T */
-            if ((t[1] & 0x01) != 0) {
-                t[0] ^= 0xa8;
-                t[1] ^= 0x30;
+            if ((getPositiveFromByte(t[1]) & 0x01) != 0) {
+                t[0] = getPositiveFromByte(t[0]) ^ 0xa8;
+                t[1] = getPositiveFromByte(t[1]) ^ 0x30;
             }
-            tmp = t[0] << 7;
-            t[0] = (t[0] >> 1) | (t[1] << 7);
-            t[1] = (t[1] >> 1) | tmp;
+            tmp = (byte) (getPositiveFromByte(t[0]) << 7);
+            t[0] = (byte) ((getPositiveFromByte(t[0]) >> 1) | (getPositiveFromByte(t[1]) << 7));
+            t[1] = (byte) ((getPositiveFromByte(t[1]) >> 1) | getPositiveFromByte(tmp));
         }
     }
 
@@ -416,8 +425,7 @@ public class ClefiaApplication {
     }
 
 
-    public static void ClefiaEncrypt(Byte[] ct, Byte[] pt, Byte[] rk, int r)
-    {
+    public static void ClefiaEncrypt(Byte[] ct, Byte[] pt, Byte[] rk, int r) {
         int[] rin = new int[16], rout = new int[16];
 
         ByteCpy(getBytes(rin),  pt);
@@ -433,8 +441,7 @@ public class ClefiaApplication {
         ByteXor(getSubArray(ct, 12), getSubArray(ct, 12), getSubArray(rk, r * 8 + 4), 4);
     }
 
-    public static void ClefiaDecrypt(Byte[] pt, Byte[] ct, Byte[] rk, int r)
-    {
+    public static void ClefiaDecrypt(Byte[] pt, Byte[] ct, Byte[] rk, int r) {
         int[] rin = new int[16], rout = new int[16];
 
         ByteCpy(getBytes(rin), ct);
@@ -450,10 +457,10 @@ public class ClefiaApplication {
         ByteXor(getSubArray(pt, 12), getSubArray(pt, 12), getSubArray(rk, - 4), 4); // Lo mismo que arriba
     }
 
-    static void BytePut(Byte[] data, int bytelen)
-    {
-        while(bytelen-- > 0){
-            System.out.printf("%02x", data = getSubArray(data, 1));
+    static void BytePut(Byte[] data, int bytelen) {
+        while(bytelen > 0){
+            System.out.printf("%02x", data[data.length-bytelen]);
+            bytelen--;
         }
         System.out.printf("\n");
     }
