@@ -523,23 +523,39 @@ public class ClefiaApplication {
     public static void ClefiaDoubleSwapTest(List<Byte> lk, int offsetLk) {
         List<Byte> t = new ArrayList<>();
 
-        t.add((byte) ((getPositiveFromByte(lk.get(0)) << 7) | (getPositiveFromByte(lk.get(1)) >> 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(1)) << 7) | (getPositiveFromByte(lk.get(2)) >> 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(2)) << 7) | (getPositiveFromByte(lk.get(3)) >> 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(3)) << 7) | (getPositiveFromByte(lk.get(4)) >> 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(4)) << 7) | (getPositiveFromByte(lk.get(5)) >> 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(5)) << 7) | (getPositiveFromByte(lk.get(6)) >> 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(6)) << 7) | (getPositiveFromByte(lk.get(7)) >> 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(7)) << 7) | (getPositiveFromByte(lk.get(15)) & 0x7f)));
+        t.add((byte) ((getPositiveFromByte(lk.get(0 + offsetLk)) << 7) |
+                (getPositiveFromByte(lk.get(1 + offsetLk)) >> 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(1 + offsetLk)) << 7) |
+                (getPositiveFromByte(lk.get(2 + offsetLk)) >> 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(2 + offsetLk)) << 7) |
+                (getPositiveFromByte(lk.get(3 + offsetLk)) >> 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(3 + offsetLk)) << 7) |
+                (getPositiveFromByte(lk.get(4 + offsetLk)) >> 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(4 + offsetLk)) << 7) |
+                (getPositiveFromByte(lk.get(5 + offsetLk)) >> 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(5 + offsetLk)) << 7) |
+                (getPositiveFromByte(lk.get(6 + offsetLk)) >> 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(6 + offsetLk)) << 7) |
+                (getPositiveFromByte(lk.get(7 + offsetLk)) >> 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(7 + offsetLk)) << 7) |
+                (getPositiveFromByte(lk.get(15 + offsetLk)) & 0x7f)));
 
-        t.add((byte) ((getPositiveFromByte(lk.get(8)) >> 7) | (getPositiveFromByte(lk.get(0)) & 0xfe)));
-        t.add((byte) ((getPositiveFromByte(lk.get(9)) >> 7) | (getPositiveFromByte(lk.get(8)) << 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(10)) >> 7) | (getPositiveFromByte(lk.get(9)) << 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(11)) >> 7) | (getPositiveFromByte(lk.get(10)) << 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(12)) >> 7) | (getPositiveFromByte(lk.get(11)) << 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(13)) >> 7) | (getPositiveFromByte(lk.get(12)) << 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(14)) >> 7) | (getPositiveFromByte(lk.get(13)) << 1)));
-        t.add((byte) ((getPositiveFromByte(lk.get(15)) >> 7) | (getPositiveFromByte(lk.get(14)) << 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(8 + offsetLk)) >> 7) |
+                (getPositiveFromByte(lk.get(0 + offsetLk)) & 0xfe)));
+        t.add((byte) ((getPositiveFromByte(lk.get(9 + offsetLk)) >> 7) |
+                (getPositiveFromByte(lk.get(8 + offsetLk)) << 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(10 + offsetLk)) >> 7) |
+                (getPositiveFromByte(lk.get(9 + offsetLk)) << 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(11 + offsetLk)) >> 7) |
+                (getPositiveFromByte(lk.get(10 + offsetLk)) << 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(12 + offsetLk)) >> 7) |
+                (getPositiveFromByte(lk.get(11 + offsetLk)) << 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(13 + offsetLk)) >> 7) |
+                (getPositiveFromByte(lk.get(12 + offsetLk)) << 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(14 + offsetLk)) >> 7) |
+                (getPositiveFromByte(lk.get(13 + offsetLk)) << 1)));
+        t.add((byte) ((getPositiveFromByte(lk.get(15 + offsetLk)) >> 7) |
+                (getPositiveFromByte(lk.get(14 + offsetLk)) << 1)));
 
         copyList(lk, offsetLk, t, 0, 16);
     }
