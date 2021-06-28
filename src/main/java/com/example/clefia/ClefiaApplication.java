@@ -1,11 +1,16 @@
 package com.example.clefia;
 
+import com.groupdocs.metadata.Metadata;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -88,7 +93,7 @@ public class ClefiaApplication {
     public static int[] ByteCpy(Byte[] dst, Byte[] src) {
         dst = Arrays.copyOf(src, src.length);
         int[] a = new int[dst.length];
-        for(int i = 0; i < dst.length; i++) {
+        for (int i = 0; i < dst.length; i++) {
             a[i] = dst[i];
         }
         return a;
@@ -130,7 +135,7 @@ public class ClefiaApplication {
     }
 
     private static void addSpaceToList(List<Byte> dst, int length, int maxSize) {
-        if(maxSize >= dst.size() + length) {
+        if (maxSize >= dst.size() + length) {
             for (int i = 0; i < length; i++) {
                 dst.add(null);
             }
@@ -162,9 +167,9 @@ public class ClefiaApplication {
         z.add((byte) clefia_s0[getPositiveFromByte(x.get(2))]);
         z.add((byte) clefia_s1[getPositiveFromByte(x.get(3))]);
         // Diffusion layer (M0)
-        y.add((byte) (            z.get(0) ^ ClefiaMul2(z.get(1)) ^ ClefiaMul4(z.get(2)) ^ ClefiaMul6(z.get(3))));
-        y.add((byte) (ClefiaMul2(z.get(0)) ^             z.get(1) ^ ClefiaMul6(z.get(2)) ^ ClefiaMul4(z.get(3))));
-        y.add((byte) (ClefiaMul4(z.get(0)) ^ ClefiaMul6(z.get(1)) ^             z.get(2) ^ ClefiaMul2(z.get(3))));
+        y.add((byte) (z.get(0) ^ ClefiaMul2(z.get(1)) ^ ClefiaMul4(z.get(2)) ^ ClefiaMul6(z.get(3))));
+        y.add((byte) (ClefiaMul2(z.get(0)) ^ z.get(1) ^ ClefiaMul6(z.get(2)) ^ ClefiaMul4(z.get(3))));
+        y.add((byte) (ClefiaMul4(z.get(0)) ^ ClefiaMul6(z.get(1)) ^ z.get(2) ^ ClefiaMul2(z.get(3))));
         y.add((byte) (ClefiaMul6(z.get(0)) ^ ClefiaMul4(z.get(1)) ^ ClefiaMul2(z.get(2)) ^ z.get(3)));
 
         // Add space to list because size is 0, length = 4 because adding 4 in next function
@@ -196,9 +201,9 @@ public class ClefiaApplication {
         z.add((byte) clefia_s1[getPositiveFromByte(x.get(2))]);
         z.add((byte) clefia_s0[getPositiveFromByte(x.get(3))]);
         // Diffusion layer (M0)
-        y.add((byte) (            z.get(0) ^ ClefiaMul8(z.get(1)) ^ ClefiaMul2(z.get(2)) ^ ClefiaMulA(z.get(3))));
-        y.add((byte) (ClefiaMul8(z.get(0)) ^             z.get(1) ^ ClefiaMulA(z.get(2)) ^ ClefiaMul2(z.get(3))));
-        y.add((byte) (ClefiaMul2(z.get(0)) ^ ClefiaMulA(z.get(1)) ^             z.get(2) ^ ClefiaMul8(z.get(3))));
+        y.add((byte) (z.get(0) ^ ClefiaMul8(z.get(1)) ^ ClefiaMul2(z.get(2)) ^ ClefiaMulA(z.get(3))));
+        y.add((byte) (ClefiaMul8(z.get(0)) ^ z.get(1) ^ ClefiaMulA(z.get(2)) ^ ClefiaMul2(z.get(3))));
+        y.add((byte) (ClefiaMul2(z.get(0)) ^ ClefiaMulA(z.get(1)) ^ z.get(2) ^ ClefiaMul8(z.get(3))));
         y.add((byte) (ClefiaMulA(z.get(0)) ^ ClefiaMul2(z.get(1)) ^ ClefiaMul8(z.get(2)) ^ z.get(3)));
 
         // Add space to list because size is 0, length = 4 because adding 4 in next function
@@ -253,7 +258,7 @@ public class ClefiaApplication {
         copyList(fin, 0, x, 0, 16);
 
         while (r-- > 0) {
-            ClefiaF0XorTest(fout,0, fin, 0, rk, offsetRk);
+            ClefiaF0XorTest(fout, 0, fin, 0, rk, offsetRk);
             ClefiaF1XorTest(fout, 8, fin, 8, rk, offsetRk + 4);
 
             offsetRk -= 8;
@@ -277,9 +282,9 @@ public class ClefiaApplication {
         copyList(fin, 0, x, 0, 32);
 
         while (r-- > 0) {
-            ClefiaF0XorTest(fout,  0, fin,  0, rk,        offsetRk      );
-            ClefiaF1XorTest(fout,  8, fin,  8, rk, offsetRk + 4 );
-            ClefiaF0XorTest(fout, 16, fin, 16, rk, offsetRk + 8 );
+            ClefiaF0XorTest(fout, 0, fin, 0, rk, offsetRk);
+            ClefiaF1XorTest(fout, 8, fin, 8, rk, offsetRk + 4);
+            ClefiaF0XorTest(fout, 16, fin, 16, rk, offsetRk + 8);
             ClefiaF1XorTest(fout, 24, fin, 24, rk, offsetRk + 12);
 
             offsetRk += 16;
@@ -294,13 +299,13 @@ public class ClefiaApplication {
     }
 
     static int ClefiaKeySet(List<Byte> rk, List<Byte> skey, int key_bitlen) {
-        if(128 == key_bitlen){
+        if (128 == key_bitlen) {
             ClefiaKeySet128(rk, skey);
             return 18;
-        } else if(192 == key_bitlen){
+        } else if (192 == key_bitlen) {
             ClefiaKeySet192(rk, skey);
             return 22;
-        } else if(256 == key_bitlen){
+        } else if (256 == key_bitlen) {
             ClefiaKeySet256(rk, skey);
             return 26;
         }
@@ -309,7 +314,7 @@ public class ClefiaApplication {
     }
 
     public static int getPositiveFromByte(int number) {
-        return (number<0) ? number + 256 : number;
+        return (number < 0) ? number + 256 : number;
     }
 
     public static void ClefiaConSetTest(List<Byte> con, Byte[] iv, int lk) {
@@ -405,7 +410,7 @@ public class ClefiaApplication {
             offsetCon128 = (i * 16) + (4 * 24);
             ByteXorTest(rk, offsetRk, lk, offsetConLk, con128, offsetCon128, 16);
             if ((i % 2) != 0) {
-                ByteXorTest(rk, offsetRk, rk, offsetRk, skey, offsetSkey,16); // Xoring K
+                ByteXorTest(rk, offsetRk, rk, offsetRk, skey, offsetSkey, 16); // Xoring K
             }
             ClefiaDoubleSwapTest(lk, 0); // Updating L (DoubleSwap function)
             offsetRk += 16;
@@ -455,7 +460,7 @@ public class ClefiaApplication {
                 ClefiaDoubleSwapTest(lk, 16); // updating LR
             } else {
                 ByteXorTest(rk, offsetRk, lk, offsetLk, con192, offsetCon192, 16); // LL
-                if ((i % 2)!=0) {
+                if ((i % 2) != 0) {
                     ByteXorTest(rk, offsetRk, rk, offsetRk, skey256, offsetSkey256 + 16, 16); // Xoring KR
                 }
                 ClefiaDoubleSwapTest(lk, 0);  // updating LL
@@ -463,7 +468,7 @@ public class ClefiaApplication {
             offsetRk += 16;
         }
         // final whitening key (WK2, WK3)
-        ByteXorTest(rk, offsetRk, skey256,offsetSkey256 + 8, skey256,offsetSkey256 + 24, 8);
+        ByteXorTest(rk, offsetRk, skey256, offsetSkey256 + 8, skey256, offsetSkey256 + 24, 8);
     }
 
     public static void ClefiaKeySet256(List<Byte> rk, List<Byte> skey) {
@@ -489,17 +494,17 @@ public class ClefiaApplication {
 
         offsetRk += 8;
 
-        for(i = 0; i < 13; i++){ // round key (RKi (0 <= i < 52))
+        for (i = 0; i < 13; i++) { // round key (RKi (0 <= i < 52))
             offsetCon256 = (i * 16) + (4 * 40);
-            if(((i / 2) % 2) != 0) {
+            if (((i / 2) % 2) != 0) {
                 ByteXorTest(rk, offsetRk, lk, 16, con256, offsetCon256, 16); // LR
-                if((i % 2)!=0) {
+                if ((i % 2) != 0) {
                     ByteXorTest(rk, offsetRk, rk, offsetRk, skey, offsetSkey, 16); // Xoring KL
                 }
-                ClefiaDoubleSwapTest(lk,16); // updating LR
+                ClefiaDoubleSwapTest(lk, 16); // updating LR
             } else {
-                ByteXorTest(rk, offsetRk, lk, offsetLk,  con256, offsetCon256, 16); // LL
-                if((i % 2) != 0) {
+                ByteXorTest(rk, offsetRk, lk, offsetLk, con256, offsetCon256, 16); // LL
+                if ((i % 2) != 0) {
                     ByteXorTest(rk, offsetRk, rk, offsetRk, skey, offsetSkey + 16, 16); // Xoring KR
                 }
                 ClefiaDoubleSwapTest(lk, 0);  // updating LL
@@ -507,7 +512,7 @@ public class ClefiaApplication {
             offsetRk += 16;
         }
         // final whitening key (WK2, WK3)
-        ByteXorTest(rk, offsetRk, skey,offsetSkey + 8, skey,offsetSkey + 24, 8);
+        ByteXorTest(rk, offsetRk, skey, offsetSkey + 8, skey, offsetSkey + 24, 8);
     }
 
     public static void ClefiaEncryptTest(List<Byte> ct, List<Byte> pt, List<Byte> rk, int r) {
@@ -520,8 +525,8 @@ public class ClefiaApplication {
 
         copyList(rin, 0, pt, 0, 16);
 
-        ByteXorTest(rin, 4 , rin, 4, rk, offsetRk, 4); /* initial key whitening */
-        ByteXorTest(rin, 12, rin, 12, rk,offsetRk + 4, 4);
+        ByteXorTest(rin, 4, rin, 4, rk, offsetRk, 4); /* initial key whitening */
+        ByteXorTest(rin, 12, rin, 12, rk, offsetRk + 4, 4);
 
         offsetRk += 8;
 
@@ -529,8 +534,8 @@ public class ClefiaApplication {
 
         copyList(ct, 0, rout, 0, 16);
 
-        ByteXorTest(ct,4, ct,4, rk,((r * 8) + offsetRk),4); /* final key whitening */
-        ByteXorTest(ct,12, ct,12, rk,((r * 8) + offsetRk + 4),4);
+        ByteXorTest(ct, 4, ct, 4, rk, ((r * 8) + offsetRk), 4); /* final key whitening */
+        ByteXorTest(ct, 12, ct, 12, rk, ((r * 8) + offsetRk + 4), 4);
     }
 
     public static void ClefiaDecryptTest(List<Byte> pt, List<Byte> ct, List<Byte> rk, int r) {
@@ -544,7 +549,7 @@ public class ClefiaApplication {
         copyList(rin, 0, ct, 0, 16);
 
         // initial key whitening
-        ByteXorTest(rin, 4,  rin,  4, rk, (r * 8) + offsetRk +  8, 4);
+        ByteXorTest(rin, 4, rin, 4, rk, (r * 8) + offsetRk + 8, 4);
         ByteXorTest(rin, 12, rin, 12, rk, (r * 8) + offsetRk + 12, 4);
 
         offsetRk += 8;
@@ -553,13 +558,13 @@ public class ClefiaApplication {
 
         copyList(pt, 0, rout, 0, 16);
 
-        ByteXorTest(pt,  4, pt,  4, rk, offsetRk - 8, 4); // final key whitening
+        ByteXorTest(pt, 4, pt, 4, rk, offsetRk - 8, 4); // final key whitening
         ByteXorTest(pt, 12, pt, 12, rk, offsetRk - 4, 4);
     }
 
     private static void printList(List<Byte> list, int length) {
-        while(length > 0){
-            System.out.printf("%02x", list.get(list.size()-length));
+        while (length > 0) {
+            System.out.printf("%02x", list.get(list.size() - length));
             length--;
         }
         System.out.println();
@@ -619,19 +624,43 @@ public class ClefiaApplication {
 //        pt.add((byte) 0x0e);
 //        pt.add((byte) 0x0f);
 
-
-
     }
+
     // convert BufferedImage to byte[]
     public static Byte[] toByteArray(BufferedImage bi, String format)
             throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bi, format, baos);
-        Byte[] bytes =  ArrayUtils.toObject(baos.toByteArray());
+        Byte[] bytes = ArrayUtils.toObject(baos.toByteArray());
         return bytes;
 
     }
+
+    public static BufferedImage ExtractMetadata(File fromFile) throws IOException {
+
+        BufferedImage bi = ImageIO.read(fromFile);
+
+        // convert BufferedImage to byte[]
+        Byte[] bytes = toByteArray(bi, "jpg");
+
+        // convert the byte[] back to BufferedImage
+        byte[] imageBuffer = ArrayUtils.toPrimitive(bytes);
+
+        //encode the byte array for display purpose only, optional
+        String bytesBase64 = Base64.encodeBase64String(imageBuffer);
+
+        System.out.println(bytesBase64);
+
+        // decode byte[] from the encoded string
+        byte[] bytesFromDecode = Base64.decodeBase64(bytesBase64);
+
+        // convert the byte[] back to BufferedImage
+        BufferedImage newBi = toBufferedImage(bytesFromDecode);
+
+        return newBi;
+    }
+
     // convert byte[] to BufferedImage
     public static BufferedImage toBufferedImage(byte[] bytes)
             throws IOException {
@@ -641,10 +670,14 @@ public class ClefiaApplication {
 
     }
 
+    public static void test(List<Integer> number) {
+        number.add(4);
+    }
+
     public static void main(String[] args) throws IOException {
         int r;
         //levantamos imagen
-        BufferedImage bi = ImageIO.read(new File("src/main/resources/test.jpg"));
+        BufferedImage bi = ExtractMetadata(new File("src/main/resources/test.jpg"));
 
         // convertimos imagen a array de bytes
         Byte[] image = toByteArray(bi, "jpg");
@@ -661,7 +694,7 @@ public class ClefiaApplication {
 
         addSpaceToList(dst, 16, 16);
         addSpaceToList(ct, 16, 16);
-        addSpaceToList(rk, (8*26 +16), (8*26 +16));
+        addSpaceToList(rk, (8 * 26 + 16), (8 * 26 + 16));
 
         System.out.println("plaintext:  ");
         printList(pt, 16);
@@ -671,50 +704,67 @@ public class ClefiaApplication {
         // For 128-bit key
         System.out.println("\n--- CLEFIA-128 ---\n");
 
-        // Encryption
+        /********************************** Encryption*************************************/
         r = ClefiaKeySet(rk, skey, 128);
         ClefiaEncryptTest(dst, pt, rk, r);
         System.out.println("ciphertext: ");
         printList(dst, 16);
 
-        // Decryption
+        // convert the byte[] back to BufferedImage
+        Byte[] dstBytes = dst.toArray(new Byte[dst.size()]);
+        byte[] imageBuffer = ArrayUtils.toPrimitive(dstBytes);
+        BufferedImage newBi = toBufferedImage(imageBuffer);
+//        System.out.println("imageBuffer: " + imageBuffer[0]);
+//        System.out.println("dst: " + dst);
+//        System.out.println("dstBytes: " + dstBytes[0]);
+//        System.out.println("newbi: " + newBi);
+        // save it somewhere
+        //antes de escribir la imagen QUIZAS deberiamosm volver a ponerle la metadata.
+        //ImageIO.write(newBi, "jpg", new File("src/main/resources/test-encripted.jpg"));
+        /********************************** Decryption *************************************/
         copyList(ct, 0, dst, 0, 16);
         r = ClefiaKeySet(rk, skey, 128);
         ClefiaDecryptTest(dst, ct, rk, r);
         System.out.println("plaintext : ");
         printList(dst, 16);
+        dstBytes = dst.toArray(new Byte[dst.size()]);
+
+        // convert the byte[] back to BufferedImage
+        imageBuffer = ArrayUtils.toPrimitive(dstBytes);
+        newBi = toBufferedImage(imageBuffer);
+        //antes de escribir la imagen QUIZAS deberiamosm volver a ponerle la metadata.
+        ImageIO.write(newBi, "jpg", new File("src/main/resources/test-encripted.jpg"));
 
 
-        // For 192-bit key
-        System.out.println("\n--- CLEFIA-192 ---\n");
-
-        // Encryption
-        r = ClefiaKeySet(rk, skey, 192);
-        ClefiaEncryptTest(dst, pt, rk, r);
-        System.out.println("ciphertext: ");
-        printList(dst, 16);
-
-        // Decryption
-        copyList(ct, 0, dst, 0, 16);
-        r = ClefiaKeySet(rk, skey, 192);
-        ClefiaDecryptTest(dst, ct, rk, r);
-        System.out.println("plaintext : ");
-        printList(dst, 16);
-
-
-        // For 256-bit key
-        System.out.println("\n--- CLEFIA-256 ---\n");
-        // Encryption
-        r = ClefiaKeySet(rk, skey, 256);
-        ClefiaEncryptTest(dst, pt, rk, r);
-        System.out.println("ciphertext: ");
-        printList(dst, 16);
-
-        // Decryption
-        copyList(ct, 0, dst, 0, 16);
-        r = ClefiaKeySet(rk, skey, 256);
-        ClefiaDecryptTest(dst, ct, rk, r);
-        System.out.println("plaintext : ");
-        printList(dst, 16);
+//        // For 192-bit key
+//        System.out.println("\n--- CLEFIA-192 ---\n");
+//
+//        // Encryption
+//        r = ClefiaKeySet(rk, skey, 192);
+//        ClefiaEncryptTest(dst, pt, rk, r);
+//        System.out.println("ciphertext: ");
+//        printList(dst, 16);
+//
+//        // Decryption
+//        copyList(ct, 0, dst, 0, 16);
+//        r = ClefiaKeySet(rk, skey, 192);
+//        ClefiaDecryptTest(dst, ct, rk, r);
+//        System.out.println("plaintext : ");
+//        printList(dst, 16);
+//
+//        // For 256-bit key
+//        System.out.println("\n--- CLEFIA-256 ---\n");
+//        // Encryption
+//        r = ClefiaKeySet(rk, skey, 256);
+//        ClefiaEncryptTest(dst, pt, rk, r);
+//        System.out.println("ciphertext: ");
+//        printList(dst, 16);
+//
+//        // Decryption
+//        copyList(ct, 0, dst, 0, 16);
+//        r = ClefiaKeySet(rk, skey, 256);
+//        ClefiaDecryptTest(dst, ct, rk, r);
+//        System.out.println("plaintext : ");
+//        printList(dst, 16);
     }
 }
