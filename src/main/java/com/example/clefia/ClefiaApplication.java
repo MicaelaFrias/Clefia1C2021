@@ -628,8 +628,7 @@ public class ClefiaApplication {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bi, format, baos);
-        //Byte[] bytes =  ArrayUtils.toObject(baos.toByteArray());
-        Byte[] bytes = new Byte[0];
+        Byte[] bytes =  ArrayUtils.toObject(baos.toByteArray());
         return bytes;
 
     }
@@ -645,19 +644,20 @@ public class ClefiaApplication {
     public static void main(String[] args) throws IOException {
         int r;
         //levantamos imagen
-        //BufferedImage bi = ImageIO.read(new File("src/main/resources/test.jpg"));
+        BufferedImage bi = ImageIO.read(new File("src/main/resources/test.jpg"));
 
         // convertimos imagen a array de bytes
-        //Byte[] image = toByteArray(bi, "jpg");
+        Byte[] image = toByteArray(bi, "jpg");
 
         List<Byte> skey = new ArrayList<>();
-        List<Byte> pt = new ArrayList<>();
+//        List<Byte> pt = new ArrayList<>();
+        List<Byte> pt = Arrays.asList(image);
         List<Byte> ct = new ArrayList<>();
         List<Byte> dst = new ArrayList<>();
         List<Byte> rk = new ArrayList<>();
 
         chargeSkey(skey);
-        chargePt(pt);
+        //chargePt(pt);
 
         addSpaceToList(dst, 16, 16);
         addSpaceToList(ct, 16, 16);
