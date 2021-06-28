@@ -1,7 +1,11 @@
 package com.example.clefia;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -597,27 +601,54 @@ public class ClefiaApplication {
         skey.add((byte) 0x00);
     }
 
-    private static void chargePt(List<Byte> pt) {
-        pt.add((byte) 0x00);
-        pt.add((byte) 0x01);
-        pt.add((byte) 0x02);
-        pt.add((byte) 0x03);
-        pt.add((byte) 0x04);
-        pt.add((byte) 0x05);
-        pt.add((byte) 0x06);
-        pt.add((byte) 0x07);
-        pt.add((byte) 0x08);
-        pt.add((byte) 0x09);
-        pt.add((byte) 0x0a);
-        pt.add((byte) 0x0b);
-        pt.add((byte) 0x0c);
-        pt.add((byte) 0x0d);
-        pt.add((byte) 0x0e);
-        pt.add((byte) 0x0f);
+    private static void chargePt(List<Byte> image) {
+//        pt.add((byte) 0x00);
+//        pt.add((byte) 0x01);
+//        pt.add((byte) 0x02);
+//        pt.add((byte) 0x03);
+//        pt.add((byte) 0x04);
+//        pt.add((byte) 0x05);
+//        pt.add((byte) 0x06);
+//        pt.add((byte) 0x07);
+//        pt.add((byte) 0x08);
+//        pt.add((byte) 0x09);
+//        pt.add((byte) 0x0a);
+//        pt.add((byte) 0x0b);
+//        pt.add((byte) 0x0c);
+//        pt.add((byte) 0x0d);
+//        pt.add((byte) 0x0e);
+//        pt.add((byte) 0x0f);
+
+
+
+    }
+    // convert BufferedImage to byte[]
+    public static Byte[] toByteArray(BufferedImage bi, String format)
+            throws IOException {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, format, baos);
+        //Byte[] bytes =  ArrayUtils.toObject(baos.toByteArray());
+        Byte[] bytes = new Byte[0];
+        return bytes;
+
+    }
+    // convert byte[] to BufferedImage
+    public static BufferedImage toBufferedImage(byte[] bytes)
+            throws IOException {
+        InputStream is = new ByteArrayInputStream(bytes);
+        BufferedImage bi = ImageIO.read(is);
+        return bi;
+
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int r;
+        //levantamos imagen
+        //BufferedImage bi = ImageIO.read(new File("src/main/resources/test.jpg"));
+
+        // convertimos imagen a array de bytes
+        //Byte[] image = toByteArray(bi, "jpg");
 
         List<Byte> skey = new ArrayList<>();
         List<Byte> pt = new ArrayList<>();
