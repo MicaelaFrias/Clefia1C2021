@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Utils {
 
-    private static void addSpaceToList(List<Byte> dst, int length, int maxSize) {
+    static void addSpaceToList(List<Byte> dst, int length, int maxSize) {
         if (maxSize >= dst.size() + length) {
             for (int i = 0; i < length; i++) {
                 dst.add(null);
@@ -12,7 +12,7 @@ public class Utils {
         }
     }
 
-    private static void copyList(List<Byte> dst, int offsetDst, List<Byte> src, int offsetSrc, int to) {
+    public static void copyList(List<Byte> dst, int offsetDst, List<Byte> src, int offsetSrc, int to) {
         for (int i = 0; i < to; i++) {
             dst.set(offsetDst + i, src.get(offsetSrc + i));
         }
@@ -31,24 +31,24 @@ public class Utils {
 
 
     // convert BufferedImage to byte[]
-    public static Byte[] toByteArray(BufferedImage bi, String format)
-            throws IOException {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(bi, format, baos);
-        Byte[] bytes = ArrayUtils.toObject(baos.toByteArray());
-        return bytes;
-
-    }
-
-    // convert byte[] to BufferedImage
-//    public static BufferedImage toBufferedImage(byte[] bytes)
+//    public static Byte[] toByteArray(BufferedImage bi, String format)
 //            throws IOException {
-//        InputStream is = new ByteArrayInputStream(bytes);
-//        BufferedImage bi = ImageIO.read(is);
-//        return bi;
+//
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        ImageIO.write(bi, format, baos);
+//        Byte[] bytes = ArrayUtils.toObject(baos.toByteArray());
+//        return bytes;
 //
 //    }
+
+    // convert byte[] to BufferedImage
+    public static BufferedImage toBufferedImage(byte[] bytes)
+            throws IOException {
+        InputStream is = new ByteArrayInputStream(bytes);
+        BufferedImage bi = ImageIO.read(is);
+        return bi;
+
+    }
 //
 //    public static byte[] listToByteArray(List<Byte> list) {
 //
@@ -56,7 +56,6 @@ public class Utils {
 //        list.toArray(byteUpper);
 //
 //        return ArrayUtils.toPrimitive(byteUpper);
-//
 //    }
 
     private static void fillLastList(List<Byte> toFill, List<Byte> pt) {

@@ -2,19 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8177abdb-17f2-43c3-8fb1-a6aba43f957e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Clefia1C2021.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/New/src/main/java/org/clefia/module/ClefiaCipher.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/New/src/main/java/org/clefia/module/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/New/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/New/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/New/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/New/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/New/src/main/java/org/example/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/New/src/main/java/org/clefia/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/New/src/main/java/org/example/CipherController.java" beforeDir="false" afterPath="$PROJECT_DIR$/New/src/main/java/org/clefia/CipherController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/New/src/main/resources/org/example/cipherView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/New/src/main/resources/org/clefia/cipherView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/New/target/classes/module-info.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/New/target/classes/org/example/App.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/New/target/classes/org/example/CipherController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/New/target/classes/org/example/cipherView.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Old/src/main/java/com/example/clefia/ClefiaApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/Old/src/main/java/com/example/clefia/ClefiaApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/New/src/main/java/org/clefia/module/ClefiaCipher.java" beforeDir="false" afterPath="$PROJECT_DIR$/New/src/main/java/org/clefia/module/ClefiaCipher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/New/src/main/java/org/clefia/module/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/New/src/main/java/org/clefia/module/Utils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
