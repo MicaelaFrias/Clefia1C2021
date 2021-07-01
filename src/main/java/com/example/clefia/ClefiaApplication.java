@@ -6,8 +6,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.imageio.ImageIO;
+import javax.xml.crypto.Data;
+import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -671,28 +677,74 @@ public class ClefiaApplication {
         }
     }
 
+    public static String byteToHex(byte num) {
+        char[] hexDigits = new char[2];
+        hexDigits[0] = Character.forDigit((num >> 4) & 0xF, 16);
+        hexDigits[1] = Character.forDigit((num & 0xF), 16);
+        return new String(hexDigits);
+    }
+
+    public static String encodeHexString(byte[] byteArray) {
+        StringBuffer hexStringBuffer = new StringBuffer();
+        for (int i = 0; i < byteArray.length; i++) {
+            hexStringBuffer.append(byteToHex(byteArray[i]));
+        }
+        return hexStringBuffer.toString();
+    }
+
     public static void main(String[] args) throws IOException {
         int r;
 
-        //FileInputStream fis = new FileInputStream("src/main/resources/test.jpg");
-        FileInputStream fis = new FileInputStream("src/main/resources/castle.png");
+        //levantamos imagen
+        //BufferedImage image = ImageIO.read(new File("src/main/resources/test1.jpg"));
+        //BufferedImage image = ImageIO.read(new File("src/main/resources/castle.png"));
+        BufferedImage image = ImageIO.read(new File("src/main/resources/castle6.png"));
+
+        byte[] bufferbyte = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+
+        // convertimos imagen a array de bytes
+        Byte[] imageBytes = toByteArray(image, "jpg");
+
+        /**
+         * All you need to do is a binary read of the JPEG file. Search for APP1 markers
+         * (Possibly APP2 markers as well for extensions). Copy byte by byte from the
+         * source to the destination. When you hit an APP1 (or APP2) marker stop copying
+         * and read to the next marker before resuming copying.
+         */
+
+        FileInputStream fis = new FileInputStream("src/main/resources/test.jpg");
+        //FileInputStream fis = new FileInputStream("src/main/resources/castle.png");
 
         byte[] data = new byte[fis.available()];
         Byte[] imageByte;
 
         // Read the array
         fis.read(data);
-
-        //levantamos imagen
-        BufferedImage image = ImageIO.read(new File("src/main/resources/test.jpg"));
 /*
-        // convertimos imagen a array de bytes
-        Byte[] imageByte = toByteArray(image, "jpg");
-        */
+        String hex = "";
+
+        for (int i = 0; i < data.length -1 ; i++) {
+            if((data[i] == -1) && ((data[i+1] >= -32) && (data[i+1] <= -17))) {
+                i+=2;
+                byte[] hexByte = {data[i], data[i+1]};
+                hex = encodeHexString(hexByte);
+                break;
+            }
+        }
+
+        BigInteger value = new BigInteger(hex, 16);
+        int sizeMetadata = value.intValue() + 6;
+
+        System.out.println(sizeMetadata);
+        System.out.println(data[sizeMetadata] + " " + data[sizeMetadata + 1]);
+*/
         List<Byte> skey = new ArrayList<>();
 //        List<Byte> pt = new ArrayList<>();
-        //List<Byte> pt = Arrays.asList(imageByte);
-        List<Byte> pt = Arrays.asList(ArrayUtils.toObject(data));
+        //List<Byte> pt = Arrays.asList(imageBytes);
+        List<Byte> pt = Arrays.asList(ArrayUtils.toObject(bufferbyte));
+
+        //List<Byte> dataList = Arrays.asList(ArrayUtils.toObject(data));
+        //List<Byte> pt = dataList.subList(sizeMetadata, dataList.size());
         List<Byte> ct = new ArrayList<>();
         List<Byte> dst = new ArrayList<>();
         List<Byte> rk = new ArrayList<>();
@@ -716,6 +768,9 @@ public class ClefiaApplication {
 
         List<Byte> subList = new ArrayList<>();
         List<Byte> encriptedImageList = new ArrayList<>();
+
+        //addMetadata(encriptedImageList, dataList, sizeMetadata);
+
         int offset = 0;
 
         if(pt.size() % 16 != 0) {
@@ -768,41 +823,61 @@ public class ClefiaApplication {
          * For this reason, ImageIO.read returns null.
          */
 
-        /*
+
         DataBuffer asd = image.getRaster().getDataBuffer();
-        System.out.println(imageBuffer.length);
+
         DataBufferByte buffer = new DataBufferByte(imageBuffer, imageBuffer.length);
 
         //WritableRaster wrRaster = Raster.createWritableRaster(image.getSampleModel(), asd, null);
         //WritableRaster wrRaster = Raster.createWritableRaster(image.getSampleModel(), buffer, null);
-        WritableRaster wrRaster = Raster.createPackedRaster(buffer, image.getWidth(), image.getHeight(), 8, null);
+        //WritableRaster wrRaster = Raster.createPackedRaster(buffer, image.getWidth(), image.getHeight(), 24, null);
+        WritableRaster wrRaster = Raster.createWritableRaster(image.getSampleModel(), buffer, null);
+/*
+        Raster testito = image.getData();
+        WritableRaster wr1 = testito.createCompatibleWritableRaster();
+        wr1.setDataElements(0,0, imageBuffer);
+*/
+        //Raster rast = Raster.createRaster(image.getSampleModel(), buffer, null);
+        //WritableRaster wr = rast.createCompatibleWritableRaster();
 
-        IndexColorModel icm = new IndexColorModel(8, 16, new int[16], 0, false, -1, DataBuffer.TYPE_BYTE);
-
-        BufferedImage encriptedImage = new BufferedImage(icm, wrRaster,
+        //IndexColorModel icm = new IndexColorModel(8, 16, new int[16], 0, false, -1, DataBuffer.TYPE_BYTE);
+        BufferedImage encriptedImage = new BufferedImage(image.getColorModel(), wrRaster,
                 image.getColorModel().isAlphaPremultiplied(), null);
 
-        ImageIO.write(encriptedImage, "jpg", new File("src/main/resources/test-encripted.jpg"));
-*/
+        //ImageIO.write(encriptedImage, "jpg", new File("src/main/resources/test-encripted.jpg"));
+        ImageIO.write(encriptedImage, "png", new File("src/main/resources/castle-encripted.png"));
 
+/*
+        InputStream is = new ByteArrayInputStream(imageBuffer);
+        BufferedImage newBi = ImageIO.read(is);
+        ImageIO.write(newBi, "jpg", new File("src/main/resources/test-encripted.jpg"));
+*/
+/*
         // Opening file for writting purpose
-        //FileOutputStream fos = new FileOutputStream("src/main/resources/test-encripted.jpg");
-        FileOutputStream fos = new FileOutputStream("src/main/resources/castle-encripted.png");
+        FileOutputStream fos = new FileOutputStream("src/main/resources/test-encripted.jpg");
+
+        //FileOutputStream fos = new FileOutputStream("src/main/resources/castle-encripted.png");
 
         // Writting data on Image
         fos.write(imageBuffer);
-        fos.close();
+        fos.close();*/
         fis.close();
 
         /***********************************************************************************/
 
-        //fis = new FileInputStream("src/main/resources/test-encripted.jpg");
-        fis = new FileInputStream("src/main/resources/castle-encripted.png");
+        fis = new FileInputStream("src/main/resources/test-encripted.jpg");
+        //fis = new FileInputStream("src/main/resources/castle-encripted.png");
 
         data = new byte[fis.available()];
 
         // Read the array
         fis.read(data);
+
+        //BufferedImage image2 = ImageIO.read(new File("src/main/resources/test-encripted.jpg"));
+        BufferedImage image2 = ImageIO.read(new File("src/main/resources/castle-encripted.png"));
+
+        byte[] bufferbyte2 = ((DataBufferByte) image2.getRaster().getDataBuffer()).getData();
+
 /*
         //levantamos imagen encriptada
         image = ImageIO.read(new File("src/main/resources/test-encripted.jpg"));
@@ -812,8 +887,8 @@ public class ClefiaApplication {
 */
         // convierte el array a lista
         //pt = Arrays.asList(imageByte);
-        pt = Arrays.asList(ArrayUtils.toObject(data));
-
+        //pt = Arrays.asList(ArrayUtils.toObject(data));
+        pt = Arrays.asList(ArrayUtils.toObject(bufferbyte2));
         /********************************** Decryption *************************************/
 
         subList = new ArrayList<>();
@@ -856,6 +931,13 @@ public class ClefiaApplication {
         imageBuffer = ArrayUtils.toPrimitive(dstBytes);
         */
         imageBuffer = listToByteArray(desEncriptedImageList);
+        buffer = new DataBufferByte(imageBuffer, imageBuffer.length);
+        wrRaster = Raster.createWritableRaster(image.getSampleModel(), buffer, null);
+        BufferedImage desEncriptedImage = new BufferedImage(image.getColorModel(), wrRaster,
+                image.getColorModel().isAlphaPremultiplied(), null);
+
+        //ImageIO.write(desEncriptedImage, "jpg", new File("src/main/resources/test-desEncripted.jpg"));
+        ImageIO.write(desEncriptedImage, "png", new File("src/main/resources/castle-desEncripted.png"));
 /*
         // Guardamos la imagen encriptada.
         BufferedImage desEncriptedImage = toBufferedImage(imageBuffer);
@@ -863,13 +945,19 @@ public class ClefiaApplication {
                 new File("src/main/resources/test-desEncripted.jpg"));
 */
         // Opening file for writting purpose
-
-        //fos = new FileOutputStream("src/main/resources/test-desEncripted.jpg");
-        fos = new FileOutputStream("src/main/resources/castle-desEncripted.png");
+/*
+        is = new ByteArrayInputStream(imageBuffer);
+        newBi = ImageIO.read(is);
+        ImageIO.write(newBi, "jpg", new File("src/main/resources/test-desEncripted.jpg"));
+*/
+/*
+        fos = new FileOutputStream("src/main/resources/test-desEncripted.jpg");
+        //fos = new FileOutputStream("src/main/resources/castle-desEncripted.png");
 
         // Writting data on Image
         fos.write(imageBuffer);
         fos.close();
+*/
         fis.close();
 
         /***********************************************************************************/
@@ -904,5 +992,11 @@ public class ClefiaApplication {
 //        ClefiaDecryptTest(dst, ct, rk, r);
 //        System.out.println("plaintext : ");
 //        printList(dst, 16);
+    }
+
+    private static void addMetadata(List<Byte> encriptedImageList, List<Byte> dataList, int sizeMetadata) {
+        for (int i = 0; i < sizeMetadata; i++) {
+            encriptedImageList.add(dataList.get(i));
+        }
     }
 }
