@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Demo</title>
 </head>
 <body>
-    <h3>Demo de Criptografía</h3>
-    <button>Encriptar con 128</button>
-    <button>Encriptar con 192</button>
-    <button>Encriptar con 256</button>
-    <input type="file" title="Seleccionar imagen a encriptar">
+<h3>Demo de Criptografía</h3>
+<form method="POST" enctype="multipart/form-data" action="/encriptarArchivo">
+    <input type="file" name="uploadedFileName" id="fileToUpload" required="">
+    <input type="submit" name="encriptar_archivo" value="Encriptar" id=""/>
+</form>
+<button>Encriptar</button>
+<button>Desencriptar</button>
+<p>${path}</p>
 </body>
 </html>
