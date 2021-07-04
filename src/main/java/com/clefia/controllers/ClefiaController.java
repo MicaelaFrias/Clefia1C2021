@@ -39,10 +39,13 @@ public class ClefiaController {
 
     public static String pathEncrypted;
     public static String pathDecrypted;
+    public static String pathOriginal;
 
     @RequestMapping(value = "/", method = GET)
     public String home(HttpSession session) {
         session.setAttribute("pathEncrypted",pathEncrypted);
+        session.setAttribute("pathDecrypted",pathDecrypted);
+        session.setAttribute("pathOriginal",pathOriginal);
         return "index.html";
     }
 
@@ -56,21 +59,16 @@ public class ClefiaController {
         String prefix = fileName.substring(fileName.lastIndexOf("."));
         File file = null;
         file = File.createTempFile(fileName, prefix);
+        pathOriginal = "images/source/" + fileName;
         multipartFile.transferTo(file);
         File fileEncrypted = clefiaService.encriptarImagen(file, Integer.valueOf(keySize), fileName);
-        pathEncrypted = fileEncrypted.getAbsolutePath();
+        pathEncrypted = "images/encrypted/" + fileEncrypted.getName();
         File fileDecrypted = clefiaService.desencriptarArchivo(fileEncrypted, Integer.valueOf(keySize), fileEncrypted.getName());
-        pathDecrypted =fileDecrypted.getAbsolutePath();
-         //bound = Binder.bind("pathDecrypter", pathDecrypted);
-        addAttributes(model);
+        pathDecrypted = "images/decrypted/" + fileDecrypted.getName();
 
         return "redirect:/";
     }
 
-    @ModelAttribute
-    public void addAttributes(Model model) {
-        model.addAttribute("pathEncrypted",pathEncrypted);
-    }
 
 
 }

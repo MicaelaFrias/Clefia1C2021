@@ -20,10 +20,18 @@
         <br>
         <br>
         <input type="submit" name="encriptar_archivo" value="Encriptar/Desencriptar" id=""/>
-        <p th:text="${session.pathEncrypted}"></p>
-        <img th:src="@{/images/encrypted/castle-128.png}"/>
-<!--        <img src="/resources/images/encrypted/castle-128.png"/>-->
+        <div style="display:flex">
+        <div>Imagen Original
+        <img th:src="${session.pathOriginal}"/>
+        </div>
+        <div>Imagen Encriptada
+        <img th:src="${session.pathEncrypted}"/>
+        </div>
 
+        <div>Imagen Desencriptada
+        <img th:src="${session.pathDecrypted}"/>
+        </div>
+        </div>
     </form>
 
     </body>
