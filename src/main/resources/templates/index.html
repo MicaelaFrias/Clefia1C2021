@@ -1,40 +1,75 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Demo</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <style type="text/css" rel="stylesheet">
+				.container {
+					width: 90%;
+					margin: 0 auto;
+					border: 2px solid black;
+					background: #F0F0F0;
+				}
+				.container-images {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+
+				.image-div {
+					margin: 0 10px;
+					max-width: 30%;
+				}
+
+				@media screen and (max-width: 600px) {
+					.container-images {
+						flex-direction: column;
+					}
+
+					.image-div {
+						margin: 10px 0px;
+						max-width: 100%;
+					}
+
+					.container {
+						width: 95%;
+					}
+				}
+
+    </style>
+    <title>Clefia App</title>
 </head>
-<fieldset style="width:300px; background-color:#bababa">
-    <body>
-    <h3>CLEFIA</h3>
-    <form method="POST" enctype="multipart/form-data" action="/encriptarArchivo">
-        <input type="file" name="uploadedFileName" id="fileToUpload" required="">
-        <br>
-        <br>
-        <label for="keySize">Tamaño de la clave</label>
-        <select id="keySize" name="keySize" size="1">
-            <option value="128" selected="selected">128</option>
-            <option value="192">192</option>
-            <option value="256">256</option>
-        </select>
-        <br>
-        <br>
-        <input type="submit" name="encriptar_archivo" value="Encriptar/Desencriptar" id=""/>
-        <div style="display:flex">
-        <div>Imagen Original
-        <img th:src="${session.pathOriginal}"/>
+<!--<fieldset style="width:300px; background-color:#bababa">-->
+<body>
+<h3>CLEFIA</h3>
+<form method="POST" enctype="multipart/form-data" action="/encriptarArchivo">
+    <input type="file" name="uploadedFileName" id="fileToUpload" required="">
+    <br>
+    <br>
+    <label for="keySize">Tamaño de la clave</label>
+    <select id="keySize" name="keySize" size="1">
+        <option value="128" selected="selected">128</option>
+        <option value="192">192</option>
+        <option value="256">256</option>
+    </select>
+    <br>
+    <br>
+    <input type="submit" name="encriptar_archivo" value="Encriptar/Desencriptar" id=""/>
+    <br>
+    <br>
+    <div class="container-images">
+        <div class="image-div">Imagen Original
+            <img width="100%" th:src="${session.pathOriginal}"/>
         </div>
-        <div>Imagen Encriptada
-        <img th:src="${session.pathEncrypted}"/>
+        <div class="image-div">Imagen Encriptada
+            <img width="100%" th:src="${session.pathEncrypted}"/>
         </div>
+        <div class="image-div">Imagen Desencriptada
+            <img width="100%" th:src="${session.pathDecrypted}"/>
+        </div>
+    </div>
+</form>
 
-        <div>Imagen Desencriptada
-        <img th:src="${session.pathDecrypted}"/>
-        </div>
-        </div>
-    </form>
-
-    </body>
+</body>
 </fieldset>
 
 </html>
