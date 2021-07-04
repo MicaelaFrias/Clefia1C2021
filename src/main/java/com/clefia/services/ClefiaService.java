@@ -94,7 +94,7 @@ public class ClefiaService implements IClefiaService {
         return fileEncrypted;
     }
 
-    public void desencriptarArchivo(File file, Integer keySize, String fileName) throws IOException {
+    public File desencriptarArchivo(File file, Integer keySize, String fileName) throws IOException {
         int r;
         List<Byte> skey = new ArrayList<>();
         List<Byte> ct = new ArrayList<>();
@@ -115,10 +115,6 @@ public class ClefiaService implements IClefiaService {
         FunctionHelper.addSpaceToList(ct, 16, 16);
         FunctionHelper.addSpaceToList(rk, (8 * 26 + 16), (8 * 26 + 16));
 
-        System.out.println("Plain Text:  ");
-        FunctionHelper.printList(pt, 16);
-        System.out.println("Secret Key:  ");
-        FunctionHelper.printList(skey, 32);
         pt = Arrays.asList(ArrayUtils.toObject(bufferByte2));
 
         /*
@@ -149,7 +145,7 @@ public class ClefiaService implements IClefiaService {
         }
 
         // convert the byte[] back to BufferedImage
-        byte[]imageBuffer = FunctionHelper.listToByteArray(desEncryptedImageList);
+        byte[] imageBuffer = FunctionHelper.listToByteArray(desEncryptedImageList);
         DataBufferByte buffer = new DataBufferByte(imageBuffer, imageBuffer.length);
         WritableRaster wrRaster = Raster.createWritableRaster(image2.getSampleModel(), buffer, null);
         BufferedImage desencryptedImage = new BufferedImage(image2.getColorModel(), wrRaster,
@@ -157,11 +153,11 @@ public class ClefiaService implements IClefiaService {
 
         String extension = fileName.split("\\.")[1];
         String name = fileName.split("\\.")[0];
-        File fileDesencrypted = new File("src/main/resources/images/decrypted/" +
+        File fileDecrypted = new File("src/main/resources/images/decrypted/" +
                 name + "." + extension);
 
         ImageIO.write(desencryptedImage, extension,
-                fileDesencrypted);
-
+                fileDecrypted);
+        return fileDecrypted;
     }
 }

@@ -1,6 +1,7 @@
 package com.clefia.controllers;
 
 import com.clefia.services.IClefiaService;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import utils.ClefiaCipher;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
@@ -29,20 +31,24 @@ import java.util.List;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Controller
+@ControllerAdvice
 public class ClefiaController {
     @Autowired
     private IClefiaService clefiaService;
     public String key;
 
-    @RequestMapping(value = "/", method = GET)
-    public String home() {
+    public static String pathEncrypted;
+    public static String pathDecrypted;
 
+    @RequestMapping(value = "/", method = GET)
+    public String home(HttpSession session) {
+        session.setAttribute("pathEncrypted",pathEncrypted);
         return "index.html";
     }
 
     @PostMapping("/encriptarArchivo")
     public String encriptarArchivo(@RequestParam("uploadedFileName") MultipartFile multipartFile,
-                                   ModelMap model,
+                                   Model model,
                                    @ModelAttribute("keySize") String keySize) throws IOException {
         // convertimos multipart file
         int r;
@@ -52,9 +58,18 @@ public class ClefiaController {
         file = File.createTempFile(fileName, prefix);
         multipartFile.transferTo(file);
         File fileEncrypted = clefiaService.encriptarImagen(file, Integer.valueOf(keySize), fileName);
-        System.out.println(fileEncrypted.getName());
-        clefiaService.desencriptarArchivo(fileEncrypted, Integer.valueOf(keySize), fileEncrypted.getName());
+        pathEncrypted = fileEncrypted.getAbsolutePath();
+        File fileDecrypted = clefiaService.desencriptarArchivo(fileEncrypted, Integer.valueOf(keySize), fileEncrypted.getName());
+        pathDecrypted = fileDecrypted.getPath();
+         //bound = Binder.bind("pathDecrypter", pathDecrypted);
+        addAttributes(model);
+
         return "redirect:/";
+    }
+
+    @ModelAttribute
+    public void addAttributes(Model model) {
+        model.addAttribute("pathEncrypted",pathEncrypted);
     }
 
 

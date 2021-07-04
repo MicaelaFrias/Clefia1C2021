@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Demo</title>
@@ -19,6 +20,8 @@
         <br>
         <br>
         <input type="submit" name="encriptar_archivo" value="Encriptar/Desencriptar" id=""/>
+        <p th:text="${session.pathEncrypted}"></p>
+        <image th:src="${session.pathEncrypted}"></image>
     </form>
 
     </body>

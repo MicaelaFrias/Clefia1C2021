@@ -8,5 +8,5 @@ import java.io.IOException;
 
 public interface IClefiaService {
     File encriptarImagen(File file, Integer keySize, String fileName) throws IOException;
-    void desencriptarArchivo(File file, Integer keySize,String fileName) throws IOException;
+    File desencriptarArchivo(File file, Integer keySize,String fileName) throws IOException;
 }
