@@ -1,6 +1,7 @@
 package com.clefia.controllers;
 
 import com.clefia.services.IClefiaService;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,6 +25,7 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,17 +58,14 @@ public class ClefiaController {
         int r;
         String fileName = multipartFile.getOriginalFilename();
         String prefix = Objects.requireNonNull(fileName).substring(fileName.lastIndexOf("."));
-        File file;
-        file = File.createTempFile(fileName, prefix);
+        File file = File.createTempFile(fileName, prefix);
         pathOriginal = "images/source/" + fileName;
         model.addAttribute("pathOriginal", pathOriginal);
         multipartFile.transferTo(file);
         File fileEncrypted = clefiaService.encriptarImagen(file, Integer.valueOf(keySize), fileName);
-        pathEncrypted = "images/encrypted/" + fileEncrypted.getName();
-        model.addAttribute("pathEncrypted", pathEncrypted);
+        model.addAttribute("pathEncrypted", Base64.encodeBase64String(Files.readAllBytes(fileEncrypted.toPath())));
         File fileDecrypted = clefiaService.desencriptarArchivo(fileEncrypted, Integer.valueOf(keySize), fileEncrypted.getName());
-        pathDecrypted = "images/decrypted/" + fileDecrypted.getName();
-        model.addAttribute("pathDecrypted", pathDecrypted);
+        model.addAttribute("pathDecrypted", Base64.encodeBase64String(Files.readAllBytes(fileDecrypted.toPath())));
         model.addAttribute("activeLoading", true);
         return "index.html";
     }
