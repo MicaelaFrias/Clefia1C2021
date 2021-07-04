@@ -87,7 +87,7 @@ public class ClefiaService implements IClefiaService {
                 image.getColorModel().isAlphaPremultiplied(), null);
         String extension = fileName.split("\\.")[1];
         String name = fileName.split("\\.")[0];
-        File fileEncrypted = new File("src/main/resources/images/encrypted/" +
+        File fileEncrypted = new File("src/main/resources/static/images/encrypted/" +
                 name + "-" + keySize.toString() + "." + extension);
         ImageIO.write(encryptedImage, extension,
                 fileEncrypted);
@@ -148,15 +148,15 @@ public class ClefiaService implements IClefiaService {
         byte[] imageBuffer = FunctionHelper.listToByteArray(desEncryptedImageList);
         DataBufferByte buffer = new DataBufferByte(imageBuffer, imageBuffer.length);
         WritableRaster wrRaster = Raster.createWritableRaster(image2.getSampleModel(), buffer, null);
-        BufferedImage desencryptedImage = new BufferedImage(image2.getColorModel(), wrRaster,
+        BufferedImage decryptedImage = new BufferedImage(image2.getColorModel(), wrRaster,
                 image2.getColorModel().isAlphaPremultiplied(), null);
 
         String extension = fileName.split("\\.")[1];
         String name = fileName.split("\\.")[0];
-        File fileDecrypted = new File("src/main/resources/images/decrypted/" +
+        File fileDecrypted = new File("src/main/resources/static/images/decrypted/" +
                 name + "." + extension);
 
-        ImageIO.write(desencryptedImage, extension,
+        ImageIO.write(decryptedImage, extension,
                 fileDecrypted);
         return fileDecrypted;
     }

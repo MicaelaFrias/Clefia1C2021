@@ -63,9 +63,10 @@ public class ClefiaController {
         multipartFile.transferTo(file);
         File fileEncrypted = clefiaService.encriptarImagen(file, Integer.valueOf(keySize), fileName);
         pathEncrypted = "images/encrypted/" + fileEncrypted.getName();
+        System.out.println(pathEncrypted);
         File fileDecrypted = clefiaService.desencriptarArchivo(fileEncrypted, Integer.valueOf(keySize), fileEncrypted.getName());
         pathDecrypted = "images/decrypted/" + fileDecrypted.getName();
-
+        System.out.println(pathDecrypted);
         return "redirect:/";
     }
 
