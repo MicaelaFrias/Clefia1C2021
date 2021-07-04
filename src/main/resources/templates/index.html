@@ -21,7 +21,10 @@
         <br>
         <input type="submit" name="encriptar_archivo" value="Encriptar/Desencriptar" id=""/>
         <p th:text="${session.pathEncrypted}"></p>
-        <image th:src="${session.pathEncrypted}"></image>
+        <img th:src="${session.pathEncrypted}"/>
+<!--        <img th:src="@{http://localhost/,name=${players.name})}"/>-->
+<!--        th:src="@{/img/{id}_{name}.png(id=${players.id},name=${players.name})}"-->
+<!--        //http://localhost/-->
     </form>
 
     </body>

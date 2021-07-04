@@ -58,9 +58,9 @@ public class ClefiaController {
         file = File.createTempFile(fileName, prefix);
         multipartFile.transferTo(file);
         File fileEncrypted = clefiaService.encriptarImagen(file, Integer.valueOf(keySize), fileName);
-        pathEncrypted = fileEncrypted.getAbsolutePath();
+        pathEncrypted = "file:///localhost:8080/" + fileEncrypted.getAbsolutePath();
         File fileDecrypted = clefiaService.desencriptarArchivo(fileEncrypted, Integer.valueOf(keySize), fileEncrypted.getName());
-        pathDecrypted = fileDecrypted.getPath();
+        pathDecrypted ="file:///localhost:8080/" + fileDecrypted.getAbsolutePath();
          //bound = Binder.bind("pathDecrypter", pathDecrypted);
         addAttributes(model);
 
