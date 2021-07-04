@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -42,34 +43,31 @@ public class ClefiaController {
     public static String pathOriginal;
 
     @RequestMapping(value = "/", method = GET)
-    public String home(HttpSession session) {
-        session.setAttribute("pathEncrypted",pathEncrypted);
-        session.setAttribute("pathDecrypted",pathDecrypted);
-        session.setAttribute("pathOriginal",pathOriginal);
+    public String home(Model model) {
+        model.addAttribute("activeLoading", false);
         return "index.html";
     }
 
     @PostMapping("/encriptarArchivo")
     public String encriptarArchivo(@RequestParam("uploadedFileName") MultipartFile multipartFile,
                                    Model model,
-                                   @ModelAttribute("keySize") String keySize) throws IOException {
+                                   @ModelAttribute("keySize") String keySize) throws IOException, InterruptedException {
         // convertimos multipart file
         int r;
         String fileName = multipartFile.getOriginalFilename();
-        String prefix = fileName.substring(fileName.lastIndexOf("."));
-        File file = null;
+        String prefix = Objects.requireNonNull(fileName).substring(fileName.lastIndexOf("."));
+        File file;
         file = File.createTempFile(fileName, prefix);
         pathOriginal = "images/source/" + fileName;
+        model.addAttribute("pathOriginal", pathOriginal);
         multipartFile.transferTo(file);
         File fileEncrypted = clefiaService.encriptarImagen(file, Integer.valueOf(keySize), fileName);
         pathEncrypted = "images/encrypted/" + fileEncrypted.getName();
-        System.out.println(pathEncrypted);
+        model.addAttribute("pathEncrypted", pathEncrypted);
         File fileDecrypted = clefiaService.desencriptarArchivo(fileEncrypted, Integer.valueOf(keySize), fileEncrypted.getName());
         pathDecrypted = "images/decrypted/" + fileDecrypted.getName();
-        System.out.println(pathDecrypted);
-        return "redirect:/";
+        model.addAttribute("pathDecrypted", pathDecrypted);
+        model.addAttribute("activeLoading", true);
+        return "index.html";
     }
-
-
-
 }

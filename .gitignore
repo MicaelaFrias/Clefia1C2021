@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+src/main/resources/static/images/encrypted/
+src/main/resources/static/images/decrypted/
