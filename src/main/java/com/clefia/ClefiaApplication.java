@@ -107,12 +107,6 @@ public class ClefiaApplication {
         *********************************** Encrypted to Decrypted **********************************************
         */
 
-        fis = new FileInputStream(filePath.replace("*", "encrypted") + "-encrypted" + format);
-        data = new byte[fis.available()];
-
-        // Read the array
-        readResult = fis.read(data);
-        System.out.println("Read Result: " + readResult);
         BufferedImage image2 = ImageIO.read(new File(filePath.replace("*", "encrypted") + "-encrypted" + format));
         byte[] bufferByte2 = ((DataBufferByte) image2.getRaster().getDataBuffer()).getData();
 
@@ -148,12 +142,11 @@ public class ClefiaApplication {
         // convert the byte[] back to BufferedImage
         imageBuffer = FunctionHelper.listToByteArray(desEncryptedImageList);
         buffer = new DataBufferByte(imageBuffer, imageBuffer.length);
-        wrRaster = Raster.createWritableRaster(image.getSampleModel(), buffer, null);
-        BufferedImage desEncryptedImage = new BufferedImage(image.getColorModel(), wrRaster,
-                image.getColorModel().isAlphaPremultiplied(), null);
+        wrRaster = Raster.createWritableRaster(image2.getSampleModel(), buffer, null);
+        BufferedImage desEncryptedImage = new BufferedImage(image2.getColorModel(), wrRaster,
+                image2.getColorModel().isAlphaPremultiplied(), null);
 
         ImageIO.write(desEncryptedImage, format.split("\\.")[1], new File(filePath.replace("*", "decrypted") + "-decrypted" + format));
-        fis.close();
 
         /*
           **********************************************************************************/
