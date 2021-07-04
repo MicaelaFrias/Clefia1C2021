@@ -38,8 +38,9 @@ window.addEventListener('load', (event) => {
             console.log(newImgD.src)
             spinner.style.display = "none";
         }, 8000);
+    } else {
+        spinner.style.display = "none";
     }
-    spinner.style.display = "none";
 });
 
 function showSpinner() {
