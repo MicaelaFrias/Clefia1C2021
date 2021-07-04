@@ -58,12 +58,15 @@
     <br>
     <div class="container-images">
         <div class="image-div">Imagen Original
+            <p th:text="${session.pathOriginal}"/>
             <img width="100%" th:src="${session.pathOriginal}"/>
         </div>
         <div class="image-div">Imagen Encriptada
+            <p th:text="${session.pathEncrypted}"/>
             <img width="100%" th:src="${session.pathEncrypted}"/>
         </div>
         <div class="image-div">Imagen Desencriptada
+            <p th:text="${session.pathDecrypted}"/>
             <img width="100%" th:src="${session.pathDecrypted}"/>
         </div>
     </div>
