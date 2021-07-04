@@ -39,9 +39,6 @@ public class ClefiaService implements IClefiaService {
         FunctionHelper.addSpaceToList(ct, 16, 16);
         FunctionHelper.addSpaceToList(rk, (8 * 26 + 16), (8 * 26 + 16));
 
-        // For 128-bit key
-        System.out.println("\n--- CLEFIA-128 ---\n");
-
         /*
          ********************************* Encryption ************************************
          */
@@ -70,7 +67,7 @@ public class ClefiaService implements IClefiaService {
             List<Byte> lastList = new ArrayList<>();
             FunctionHelper.fillLastList(lastList, pt);
 
-            r = ClefiaCipher.ClefiaKeySet(rk, skey, 128);
+            r = ClefiaCipher.ClefiaKeySet(rk, skey, keySize);
             ClefiaCipher.ClefiaEncryptTest(dst, lastList, rk, r);
 
             encryptedImageList.addAll(dst);
@@ -131,7 +128,7 @@ public class ClefiaService implements IClefiaService {
         // encripta de a bloques de 16 bytes por lo tanto hay que ir cortando la imagen en bloques de 16 bytes
         for (int i = 0; i < (pt.size() / 16); i++) {
             subList = pt.subList(i * 16, (i * 16) + 16);
-            r = ClefiaCipher.ClefiaKeySet(rk, skey, 128);
+            r = ClefiaCipher.ClefiaKeySet(rk, skey, keySize);
             ClefiaCipher.ClefiaDecryptTest(dst, subList, rk, r);
             desEncryptedImageList.addAll(dst);
         }
@@ -139,7 +136,7 @@ public class ClefiaService implements IClefiaService {
         if (offset != 0) { // quiere decir que el ultimo bloque de bytes no llega a 16.
             List<Byte> lastList = new ArrayList<>();
             FunctionHelper.fillLastList(lastList, pt);
-            r = ClefiaCipher.ClefiaKeySet(rk, skey, 128);
+            r = ClefiaCipher.ClefiaKeySet(rk, skey, keySize);
             ClefiaCipher.ClefiaDecryptTest(dst, subList, rk, r);
             desEncryptedImageList.addAll(dst);
         }
