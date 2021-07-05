@@ -29,7 +29,7 @@ window.addEventListener('load', (event) => {
             newImgE.src = baseUrl + _encryptedPath;
             newImgD.src = baseUrl + _decryptedPath;
             spinner.style.display = "none";
-        }, 8000);
+        }, 1000);
     } else {
         spinner.style.display = "none";
     }
